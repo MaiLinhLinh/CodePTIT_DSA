@@ -13,12 +13,16 @@ int a[15][15];
 
 void Try(int x, int y, string ans)
 {
+    if (a[0][0] == 0)
+        return;
     if (x == n - 1 && y == n - 1) {
         ok = 1;
         cout << ans << " ";
-    } else if ((x + 1 < n) && a[x + 1][y] == 1)
+        return;
+    }
+    if (x + 1 < n && y < n && a[x + 1][y] == 1)
         Try(x + 1, y, ans + "D");
-    else if ((y + 1 < n) && a[x][y + 1] == 1)
+    if (x < n && y + 1 < n && a[x][y + 1] == 1)
         Try(x, y + 1, ans + "R");
 }
 int main()
@@ -36,6 +40,7 @@ int main()
                 cin >> a[i][j];
         }
         Try(0, 0, "");
+
         if (ok == 0)
             cout << "-1";
         cout << "\n";

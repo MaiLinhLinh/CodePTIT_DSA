@@ -8,7 +8,7 @@ using namespace std;
 #define ll long long
 #define mod int(1e9 + 7)
 #define nmax int(1e6 + 7)
-int hang[10], chinh[10], phu[10];
+int hang[10], chinh[20], phu[20];
 ll ans = 0;
 int a[10][10];
 
@@ -39,6 +39,7 @@ int main()
         memset(hang, 0, sizeof(hang));
         memset(chinh, 0, sizeof(chinh));
         memset(phu, 0, sizeof(phu));
+        ans = 0;
 
         for (int i = 1; i <= 8; i++) {
             for (int j = 1; j <= 8; j++) {
