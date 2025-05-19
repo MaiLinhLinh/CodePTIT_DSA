@@ -19,18 +19,22 @@ int main()
     while (t--) {
         int n;
         cin >> n;
-        queue<int> q;
-        q.push(9);
+        queue<string> q;
+        q.push("6");
+        q.push("8");
+        vector<ll> v;
         while (!q.empty()) {
-            int x = q.front();
-            if (x % n == 0) {
-                cout << x;
-                break;
-            }
+            string x = q.front();
             q.pop();
-            q.push(x * 10);
-            q.push(x * 10 + 9);
+            v.push_back(stoll(x));
+            if ((x + "6").size() <= n)
+                q.push(x + "6");
+            if ((x + "8").size() <= n)
+                q.push(x + "8");
         }
+        sort(v.begin(), v.end(), greater<ll>());
+        for (auto x : v)
+            cout << x << " ";
         cout << "\n";
     }
 

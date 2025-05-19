@@ -10,39 +10,33 @@ using namespace std;
 #define nmax int(1e6 + 7)
 int n;
 int a[25];
-int b[25];
-
-bool check()
+string b[25];
+vector<vector<string>> v;
+void check()
 {
-    vector<int> tmp;
+    vector<string> tmp;
     for (int i = 1; i <= n; i++) {
         if (a[i] == 1)
             tmp.push_back(b[i]);
     }
+    debug(tmp);
     if (tmp.size() < 2)
-        return 0;
+        return;
     for (int i = 1; i < tmp.size(); i++) {
-        if (tmp[i] <= tmp[i - 1])
-            return 0;
+        if (stoi(tmp[i]) <= stoi(tmp[i - 1]))
+            return;
     }
-    return 1;
+    v.push_back(tmp);
+    return;
 }
 
 void Try(int i)
 {
     for (int j = 0; j <= 1; j++) {
         a[i] = j;
-        if (i == n && check()) {
-            for (int i = 1; i <= n; i++)
-                cout << a[i] << " ";
-            cout << "\n";
-            for (int i = 1; i <= n; i++) {
-                if (a[i] == 1)
-                    cout << b[i] << " ";
-            }
-            cout << "\n";
-
-        } else
+        if (i == n) {
+            check();
+        } else if (i < n)
             Try(i + 1);
     }
 }
@@ -56,6 +50,13 @@ int main()
     for (int i = 1; i <= n; i++)
         cin >> b[i];
     Try(1);
+    sort(v.begin(), v.end());
+    for (int i = 0; i < v.size(); i++) {
+        for (int j = 0; j < v[i].size(); j++) {
+            cout << v[i][j] << " ";
+        }
+        cout << "\n";
+    }
 
     return 0;
 }

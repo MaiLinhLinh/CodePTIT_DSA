@@ -19,17 +19,14 @@ int main()
     while (t--) {
         int n;
         cin >> n;
-        queue<int> q;
-        q.push(9);
-        while (!q.empty()) {
-            int x = q.front();
-            if (x % n == 0) {
-                cout << x;
-                break;
-            }
-            q.pop();
-            q.push(x * 10);
-            q.push(x * 10 + 9);
+        queue<string> qu;
+        qu.push("1");
+        while (n--) {
+            string s = qu.front();
+            cout << s << " ";
+            qu.pop();
+            qu.push(s + "0");
+            qu.push(s + "1");
         }
         cout << "\n";
     }

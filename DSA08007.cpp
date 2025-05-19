@@ -17,21 +17,22 @@ int main()
     int t;
     cin >> t;
     while (t--) {
-        int n;
+        ll n;
         cin >> n;
-        queue<int> q;
-        q.push(9);
+        queue<ll> q;
+        q.push(1);
+        int cnt = 0;
         while (!q.empty()) {
-            int x = q.front();
-            if (x % n == 0) {
-                cout << x;
-                break;
-            }
+            ll x = q.front();
+            // cout << x << "\n";
             q.pop();
-            q.push(x * 10);
-            q.push(x * 10 + 9);
+            cnt++;
+            if (x * 10 <= n)
+                q.push(x * 10);
+            if (x * 10 + 1 <= n)
+                q.push(x * 10 + 1);
         }
-        cout << "\n";
+        cout << cnt << "\n";
     }
 
     return 0;

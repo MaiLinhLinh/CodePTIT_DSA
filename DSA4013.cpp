@@ -19,19 +19,20 @@ int main()
     while (t--) {
         int n;
         cin >> n;
-        queue<int> q;
-        q.push(9);
-        while (!q.empty()) {
-            int x = q.front();
-            if (x % n == 0) {
-                cout << x;
-                break;
-            }
-            q.pop();
-            q.push(x * 10);
-            q.push(x * 10 + 9);
+        int a[n + 1];
+        for (int i = 0; i < n; i++)
+            cin >> a[i];
+        sort(a, a + n);
+        int ans = n, l = n / 2 - 1, r = n - 1;
+        while (l >= 0 && r >= n / 2) {
+            if (2 * a[l] <= a[r]) {
+                l--;
+                r--;
+                ans--;
+            } else
+                l--;
         }
-        cout << "\n";
+        cout << ans << "\n";
     }
 
     return 0;

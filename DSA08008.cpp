@@ -19,19 +19,18 @@ int main()
     while (t--) {
         int n;
         cin >> n;
-        queue<int> q;
-        q.push(9);
+        queue<ll> q;
+        q.push(1);
         while (!q.empty()) {
-            int x = q.front();
+            ll x = q.front();
+            q.pop();
             if (x % n == 0) {
-                cout << x;
+                cout << x << "\n";
                 break;
             }
-            q.pop();
             q.push(x * 10);
-            q.push(x * 10 + 9);
+            q.push(x * 10 + 1);
         }
-        cout << "\n";
     }
 
     return 0;

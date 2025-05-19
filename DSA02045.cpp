@@ -9,8 +9,7 @@ using namespace std;
 #define mod int(1e9 + 7)
 #define nmax int(1e6 + 7)
 int n, ok;
-int a[15];
-
+int a[20];
 void sinh()
 {
     int i = n;
@@ -33,21 +32,27 @@ int main()
     cin >> t;
     while (t--) {
         cin >> n;
+        string s;
+        cin >> s;
         for (int i = 1; i <= n; i++)
             a[i] = 0;
-
         ok = 1;
+        vector<vector<char>> ans;
         while (ok) {
-            int gray[n + 1];
-            gray[1] = a[1];
-            for (int i = 2; i <= n; i++) {
-                int c = a[i] ^ a[i - 1];
-                gray[i] = c;
+            vector<char> tmp;
+            for (int i = 1; i <= n; i++) {
+                if (a[i] == 1) {
+                    tmp.push_back(s[i - 1]);
+                }
             }
-            for (int i = 1; i <= n; i++)
-                cout << gray[i];
-            cout << " ";
+            ans.push_back(tmp);
             sinh();
+        }
+        sort(ans.begin(), ans.end());
+        for (int i = 0; i < ans.size(); i++) {
+            for (int j = 0; j < ans[i].size(); j++)
+                cout << ans[i][j];
+            cout << " ";
         }
         cout << "\n";
     }

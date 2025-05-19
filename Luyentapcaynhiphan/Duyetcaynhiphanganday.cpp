@@ -7,7 +7,19 @@ using namespace std;
 #endif
 #define ll long long
 #define mod int(1e9 + 7)
-#define nmax int(1e6 + 7)
+#define nmax int(1e4 + 7)
+
+int n;
+int a[nmax];
+
+void inOrder(int i)
+{
+    if (i >= n)
+        return;
+    inOrder(i * 2 + 1);
+    cout << a[i] << " ";
+    inOrder(i * 2 + 2);
+}
 
 int main()
 {
@@ -17,20 +29,10 @@ int main()
     int t;
     cin >> t;
     while (t--) {
-        int n;
         cin >> n;
-        queue<int> q;
-        q.push(9);
-        while (!q.empty()) {
-            int x = q.front();
-            if (x % n == 0) {
-                cout << x;
-                break;
-            }
-            q.pop();
-            q.push(x * 10);
-            q.push(x * 10 + 9);
-        }
+        for (int i = 0; i < n; i++)
+            cin >> a[i];
+        inOrder(0);
         cout << "\n";
     }
 

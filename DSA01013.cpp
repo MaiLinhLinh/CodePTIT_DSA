@@ -17,20 +17,16 @@ int main()
     int t;
     cin >> t;
     while (t--) {
-        int n;
-        cin >> n;
-        queue<int> q;
-        q.push(9);
-        while (!q.empty()) {
-            int x = q.front();
-            if (x % n == 0) {
-                cout << x;
-                break;
-            }
-            q.pop();
-            q.push(x * 10);
-            q.push(x * 10 + 9);
+        string gray;
+        cin >> gray;
+        int bin[gray.size()];
+        bin[0] = gray[0] - '0';
+        for (int i = 1; i < gray.size(); i++) {
+            int c = (gray[i] - '0') ^ bin[i - 1];
+            bin[i] = c;
         }
+        for (int i = 0; i < gray.size(); i++)
+            cout << bin[i];
         cout << "\n";
     }
 

@@ -9,7 +9,7 @@
 
 using namespace std;
 
-#ifdef HoangHoangTuan
+#ifdef MaiLinh
 #include <debug.h>
 #else
 #define debug(...) 12
@@ -68,13 +68,14 @@ public:
         }
     }
 
-    void printMatrix(const vector<vector<int>>& matrix = {})
+    void print(const vector<vector<int>>& matrix = {})
     {
         const vector<vector<int>>& newMatrix = (matrix.empty() ? adjMatrix : matrix);
         int N = newMatrix.size() - 1;
         for (int u = 1; u <= N; ++u) {
-            for (int v = 1; v <= N; ++v)
+            for (int v = 1; v <= N; ++v) {
                 cout << newMatrix[u][v] << " ";
+            }
             cout << endl;
         }
     }
@@ -163,6 +164,7 @@ public:
         while (!q.empty()) {
             int u = q.front();
             q.pop();
+            path.push_back(u);
             for (int v = 1; v <= size; ++v) {
                 if (adjMatrix[u][v] && !visited[v]) {
                     visited[v] = true;
@@ -175,6 +177,7 @@ public:
             return {};
         for (int v = finish; v != -1; v = parents[v])
             path.push_back(v);
+        reverse(path.begin(), path.end());
         return path;
     }
 
@@ -214,8 +217,7 @@ public:
         vector<bool> visited(size + 1, false);
         function<void(int)> dfs = [&](int u) -> void {
             visited[u] = true;
-            if (u == finish)
-                return;
+            path.push_back(u);
             for (int v = 1; v <= size; ++v) {
                 if (adjMatrix[u][v] && !visited[v]) {
                     parents[v] = u;
@@ -223,11 +225,11 @@ public:
                 }
             }
         };
-        dfs(start);
         if (!visited[finish])
             return {};
         for (int v = finish; v != -1; v = parents[v])
             path.push_back(v);
+        reverse(path.begin(), path.end());
         return path;
     }
 
@@ -361,53 +363,9 @@ public:
         return cycleList;
     }
 
-    vector<pair<int, int>> dfsSpanningTree(int start)
-    {
-
-        vector<pair<int, int>> treeEdges;
-        vector<bool> visited(size + 1, false);
-        function<void(int)> dfs = [&](int u) -> void {
-            visited[u] = true;
-            for (int v = 1; v <= size; ++v) {
-                if (adjMatrix[u][v] && !visited[v]) {
-                    if (u < v)
-                        treeEdges.push_back({ u, v });
-                    else
-                        treeEdges.push_back({ v, u });
-                    dfs(v);
-                }
-            }
-        };
-        dfs(start);
-        return treeEdges;
-    }
-
-    vector<pair<int, int>> bfsSpanningTree(int start)
-    {
-        vector<pair<int, int>> treeEdges;
-        vector<bool> visited(size + 1, false);
-        queue<int> q;
-        q.push(start);
-        visited[start] = true;
-        while (!q.empty()) {
-            int u = q.front();
-            q.pop();
-            for (int v = 1; v <= size; ++v) {
-                if (adjMatrix[u][v] == 1 && !visited[v]) {
-                    if (u < v)
-                        treeEdges.push_back({ u, v });
-                    else
-                        treeEdges.push_back({ v, u });
-                    visited[v] = true;
-                    q.push(v);
-                }
-            }
-        }
-        return treeEdges;
-    }
-
     vector<vector<int>> dijkstraPath(int start)
     {
+        vector<vector<int>> paths(size + 1);
         vector<int> dist(size + 1, INF), parents(size + 1, -1);
         priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
         dist[start] = 0;
@@ -428,7 +386,6 @@ public:
                 }
             }
         }
-        vector<vector<int>> paths(size + 1);
         for (int u = 1; u <= size; ++u) {
             paths[u].push_back(dist[u]);
             for (int v = u; v != -1; v = parents[v])
@@ -516,19 +473,11 @@ public:
     {
         if (!isConnectedGraph())
             return {};
-        vector<pair<int, pair<int, int>>> edges;
-        for (int u = 1; u <= size; ++u)
-            for (int v = 1; v <= size; ++v)
-                if (adjMatrix[u][v] && u < v)
-                    edges.push_back({ adjMatrix[u][v], { u, v } });
-        sort(edges.begin(), edges.end());
         vector<int> parents(size + 1);
         for (int u = 1; u <= size; ++u)
             parents[u] = u;
         function<int(int)> findSet = [&](int u) -> int {
-            if (u == parents[u])
-                return u;
-            return parents[u] = findSet(parents[u]);
+            return (u == parents[u]) ? u : parents[u] = findSet(parents[u]);
         };
         function<bool(int, int)> unionSet = [&](int u, int v) -> bool {
             u = findSet(u);
@@ -539,21 +488,22 @@ public:
             }
             return false;
         };
+        vector<pair<int, pair<int, int>>> edges;
+        for (int u = 1; u <= size; ++u)
+            for (int v = 1; v <= size; ++v)
+                if (adjMatrix[u][v] && u < v)
+                    edges.push_back({ adjMatrix[u][v], { u, v } });
+        sort(edges.begin(), edges.end());
         vector<pair<int, pair<int, int>>> MST = { { INF, { 0, 0 } } };
-        int dH = 0;
-        debug(edges);
         for (auto& [w, edge] : edges) {
             if (MST.size() == size)
                 break;
             auto [u, v] = edge;
-            if (unionSet(u, v)) {
-                dH += w;
+            if (unionSet(u, v))
                 MST.push_back({ w, { u, v } });
-            }
         }
         if (MST.size() < size)
             return { { INF, { 0, 0 } } };
-        MST[0].fi = dH;
         return MST;
     }
 
@@ -566,10 +516,8 @@ public:
             for (int v = 1; v <= size; ++v)
                 if (adjMatrix[u][v] && u < v)
                     edges.push_back({ adjMatrix[u][v], { u, v } });
-        sort(edges.begin(), edges.end());
         vector<bool> inMST(size + 1, false);
         vector<pair<int, pair<int, int>>> MST = { { INF, { 0, 0 } } };
-        int dH = 0;
         inMST[start] = true;
         while (MST.size() < size) {
             int minW = INF, U, V;
@@ -580,13 +528,11 @@ public:
                     U = u, V = v;
                 }
             }
-            dH += minW;
             MST.push_back({ minW, { U, V } });
             inMST[U] = inMST[V] = true;
         }
         if (MST.size() < size)
             return { { INF, { 0, 0 } } };
-        MST[0].fi = dH;
         return MST;
     }
 
@@ -662,32 +608,8 @@ public:
         return (countStronglyConnectedComponents() == 1);
     }
 
-    vector<vector<int>> bellmanFordPath(int start)
+    void bellmanFordPath()
     {
-        vector<pair<int, pair<int, int>>> edges;
-        for (int u = 1; u <= size; ++u)
-            for (int v = 1; v <= size; ++v)
-                if (adjMatrix[u][v])
-                    edges.push_back({ adjMatrix[u][v], { u, v } });
-        vector<int> dist(size + 1, INF);
-        vector<int> parents(size + 1, -1);
-        dist[start] = 0;
-        for (int i = 1; i <= size - 1; ++i) {
-            for (auto& [w, uv] : edges) {
-                auto [u, v] = uv;
-                if (dist[u] != INF && dist[u] + w < dist[v]) {
-                    dist[v] = dist[u] + w;
-                    parents[v] = u;
-                }
-            }
-        }
-        vector<vector<int>> paths(size + 1);
-        for (int u = 1; u <= size; ++u) {
-            paths[u].push_back(dist[u]);
-            for (int v = u; v != -1; v = parents[v])
-                paths[u].push_back(v);
-        }
-        return paths;
     }
 
     vector<vector<vector<int>>> floydPath()
@@ -708,7 +630,7 @@ public:
         for (int k = 1; k <= size; ++k) {
             for (int u = 1; u <= size; ++u) {
                 for (int v = 1; v <= size; ++v) {
-                    if (dist[u][k] != INF && dist[k][v] != INF && dist[u][v] > dist[u][k] + dist[k][v]) {
+                    if (dist[u][v] > dist[u][k] + dist[k][v]) {
                         dist[u][v] = dist[u][k] + dist[k][v];
                         next[u][v] = next[u][k];
                     }
@@ -718,11 +640,10 @@ public:
         vector<vector<vector<int>>> paths(size + 1, vector<vector<int>>(size + 1));
         for (int u = 1; u <= size; ++u) {
             for (int v = 1; v <= size; ++v) {
-                paths[u][v].push_back(dist[u][v]);
-
-                if (next[u][v] == -1)
+                if (dist[u][v] == INF || next[u][v] == -1)
                     continue;
 
+                paths[u][v].push_back(dist[u][v]);
                 for (int x = u; x != v; x = next[x][v])
                     paths[u][v].push_back(x);
                 paths[u][v].push_back(v);
@@ -731,30 +652,34 @@ public:
         return paths;
     }
 };
-
+inline void prepare()
+{
+    // prepare in here
+    return;
+}
 inline void hhtuann()
 {
-    int N, src, dest;
-    cin >> N >> src;
-    vector<vector<int>> matrix(N + 1, vector<int>(N + 1, 0));
-    for (int i = 1; i <= N; ++i)
-        for (int j = 1; j <= N; ++j)
+    int n;
+    cin >> n;
+    vector<vector<int>> matrix(n + 1, vector<int>(n + 1, 0));
+    for (int i = 1; i <= n; i++)
+        for (int j = 1; j <= n; j++)
             cin >> matrix[i][j];
 
-    Graph G = Graph(matrix);
-    vector<vector<int>> paths = G.dijkstraPath(src);
-
-    for (int v = 1; v <= N; ++v) {
-        if (paths[v][0] == INF) {
-            cout << "K/c " << src << " -> " << v << " = INF;" << endl;
-            continue;
+    Graph g(matrix);
+    vector<vector<vector<int>>> paths = g.floydPath();
+    for (int u = 1; u <= n; ++u) {
+        for (int v = 1; v <= n; ++v) {
+            if (paths[u][v][0] == INF) {
+                cout << "K/c " << u << " -> " << v << " = INF;" << endl;
+                continue;
+            }
+            cout << "K/c " << u << " -> " << v << " = " << paths[u][v][0] << "; ";
+            cout << paths[u][v][1];
+            for (int i = 2; i < paths[u][v].size(); ++i)
+                cout << " --> " << paths[u][v][i];
+            cout << endl;
         }
-        cout << "K/c " << src << " -> " << v << " = " << paths[v][0] << "; ";
-        cout << paths[v][1];
-        for (int i = 2; i < paths[v].size(); ++i)
-            cout << " <- " << paths[v][i];
-        if (paths[v].size() == 2)
-            cout << " <- " << src;
         cout << endl;
     }
 
@@ -770,6 +695,7 @@ signed main()
         freopen((NAME + ".out").c_str(), "r", stdout);
     }
 
+    prepare();
     int testcase = 1;
 
     if (USING_TESTCASE) {

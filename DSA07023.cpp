@@ -16,20 +16,19 @@ int main()
     cout.tie(0);
     int t;
     cin >> t;
+    cin.ignore();
     while (t--) {
-        int n;
-        cin >> n;
-        queue<int> q;
-        q.push(9);
-        while (!q.empty()) {
-            int x = q.front();
-            if (x % n == 0) {
-                cout << x;
-                break;
-            }
-            q.pop();
-            q.push(x * 10);
-            q.push(x * 10 + 9);
+        string s;
+        getline(cin, s);
+        stack<string> st;
+        stringstream ss(s);
+        string word;
+        while (ss >> word) {
+            st.push(word);
+        }
+        while (!st.empty()) {
+            cout << st.top() << " ";
+            st.pop();
         }
         cout << "\n";
     }
